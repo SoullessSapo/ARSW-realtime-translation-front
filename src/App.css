@@ -1,38 +1,128 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+body {
   min-height: 100vh;
+  min-width: 100vw;
+  background: #181825;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  color: #e0e0e0;
+}
+
+body::-webkit-scrollbar {
+  width: 10px;
+  background: #2a2a3f;
+}
+body::-webkit-scrollbar-thumb {
+  background: #4a6cf7;
+  border-radius: 1em;
+}
+body::-webkit-scrollbar-thumb:hover {
+  background: #3a5adf;
+}
+
+.appRoot {
   display: flex;
   flex-direction: column;
+}
+
+.mainAppContent {
+  padding-top: 5.5rem; /* Espacio para header */
+  padding-left: 2rem;
+  padding-right: 2rem;
+  margin-left: 5rem; /* 🔧 igual al ancho de tu sidebar */
+  transition: margin-left 0.3s ease;
+}
+
+.headerBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4.5rem;
+  z-index: 100;
+  background: rgba(18, 18, 30, 0.9);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.headerLogo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logoText {
+  background: linear-gradient(135deg, #ff8c00, #ff005e);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
   color: white;
+  font-weight: 800;
 }
 
-.App-link {
-  color: #61dafb;
+.logoName {
+  font-weight: bold;
+  color: #ff8c00;
+  font-size: 1.3rem;
 }
 
-@keyframes App-logo-spin {
+.profileButton,
+.logoutButton {
+  background: #4a6cf7;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.profileButton:hover,
+.logoutButton:hover {
+  background: #3a5adf;
+}
+
+.backButton {
+  background: transparent;
+  border: none;
+  color: #4a6cf7;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.comingSoon {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #888;
+  margin-top: 4rem;
+}
+
+@media (min-width: 768px) {
+  .mainAppContent {
+    margin-left: 15rem;
+  }
+
+  .headerBar {
+    margin-left: 15rem;
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.4s;
+}
+
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: none;
   }
 }

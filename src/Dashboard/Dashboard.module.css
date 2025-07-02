@@ -1,0 +1,217 @@
+.dashboardRoot {
+  max-width: 72rem;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #1e1e2f;
+  border-radius: 1rem;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+}
+.dashboardCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1.8rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  color: #04112a;
+  backdrop-filter: blur(14px);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dashboardSectionTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #facc15;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dashboardForm {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.dashboardInput {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: 0.6rem;
+  background: #1e1e2f;
+  color: #f3f4f6;
+  border: 1px solid #3b3b51;
+  transition: border 0.2s;
+}
+.dashboardInput::placeholder {
+  color: #fff;
+  opacity: 1;
+}
+.dashboardInput:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+.dashboardCreateBtn {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.dashboardCreateBtn:hover {
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+}
+
+.meetingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.5rem;
+  color: #f3f4f6;
+  font-size: 0.95rem;
+  margin-top: 0.4rem;
+  transition: transform 0.2s ease;
+}
+
+.meetingItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.dashboardMeetingBtn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dashboardMeetingBtn:hover {
+  background: #059669;
+}
+.friendItem {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.8rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  color: #f3f4f6;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.friendHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.friendAvatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.friendName {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fefefe;
+}
+
+.friendMeetingList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.friendMeetingItem {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #e0e7ff;
+  transition: background 0.2s ease;
+}
+
+.friendMeetingItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dashboardMeetingBtn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dashboardMeetingBtn:hover {
+  background: #059669;
+}
+
+.loadingSpinner {
+  margin: 2rem auto;
+  width: 50px;
+  height: 50px;
+  border: 5px solid #3a3a4f;
+  border-top-color: #ff8c00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.dashboardGreeting {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #fefefe;
+  margin-bottom: 2rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dashboardGreeting strong {
+  color: #8b5cf6;
+}
+.dashboardSectionWrapper {
+  margin-bottom: 2.5rem;
+  padding: 2rem;
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
