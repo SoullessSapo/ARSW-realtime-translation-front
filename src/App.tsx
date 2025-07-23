@@ -25,7 +25,7 @@ import Dashboard from "./Dashboard/Dashboard";
 // import VideoCall from "./components/VideoCall/VideoCall";  // ← ya no
 import CallRoom from "./pages/CallRoom"; // ajusta la ruta según dónde pusiste CallRoom.tsx
 import Sidebar from "./components/Sidebar/Sidebar";
-import Loader from "./components/Loader/Loader";
+// import Loader from "./components/Loader/Loader"; // removed unused
 import UserProfilePanel from "./components/UserProfilePanel/UserProfilePanel";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
@@ -44,10 +44,10 @@ export default function App() {
     localStorage.getItem("token") || ""
   );
   const [meeting, setMeeting] = useState<any>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
+  // const [refreshKey, setRefreshKey] = useState(0); // removed unused
   const [showProfile, setShowProfile] = useState(false);
   const [currentSection, setCurrentSection] = useState("dashboard");
-  const [loading, setLoading] = useState(false);
+  // const [loading] = useState(false); // removed unused
   const [showRegister, setShowRegister] = useState(false);
   const [notifs, setNotifs] = useState<Notification[]>([]);
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -94,7 +94,7 @@ export default function App() {
     setToken(t);
     localStorage.setItem("user", JSON.stringify(u));
     localStorage.setItem("token", t);
-    setRefreshKey((k) => k + 1);
+    // setRefreshKey((k) => k + 1); // removed unused
   };
 
   const handleLogout = () => {
@@ -123,7 +123,7 @@ export default function App() {
   return (
     <>
       <CssBaseline />
-      {loading && <Loader />}
+      {/* {loading && <Loader />} */}
       {user && showProfile && (
         <UserProfilePanel user={user} onLogout={handleLogout} />
       )}

@@ -388,7 +388,7 @@ const CallRoom = ({
 }) => {
   // === Estados y refs para traducción ===
   const [isTranslating, setIsTranslating] = useState(false);
-  const [original, setOriginal] = useState("");
+  // const [original, setOriginal] = useState(""); // removed unused
   const [translated, setTranslated] = useState("");
   const [translationLogs, setTranslationLogs] = useState<string[]>([]);
 
@@ -408,19 +408,22 @@ const CallRoom = ({
   const THRESHOLD = 0.01;
 
   // === Utils ===
-  const logTranslation = (m: string) =>
-    setTranslationLogs((prev) => [
-      ...prev.slice(-99),
-      `[${new Date().toLocaleTimeString()}] ${m}`,
-    ]);
+  const logTranslation = useCallback(
+    (m: string) =>
+      setTranslationLogs((prev) => [
+        ...prev.slice(-99),
+        `[${new Date().toLocaleTimeString()}] ${m}`,
+      ]),
+    []
+  );
 
-  const playBase64Wav = (b64: string) => {
+  const playBase64Wav = useCallback((b64: string) => {
     const buf = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)).buffer;
     const blob = new Blob([buf], { type: "audio/wav" });
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
     audio.play().catch(() => {});
-  };
+  }, []);
 
   const mergeFloat32 = (chunks: Float32Array[]) => {
     const total = chunks.reduce((t, c) => t + c.length, 0);
@@ -440,14 +443,14 @@ const CallRoom = ({
     }
     return output;
   };
-  const rms = (buf: Float32Array) => {
+  const rms = useCallback((buf: Float32Array) => {
     let sum = 0;
     for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
     return Math.sqrt(sum / buf.length);
-  };
+  }, []);
 
   // === Funciones de traducción ===
-  const startAzure = async () => {
+  const startAzure = useCallback(async () => {
     logTranslation("Intentando emitir azure:start");
     if (!translationSocketRef.current) {
       logTranslation("[ERROR] socketRef.current es null en startAzure");
@@ -459,9 +462,9 @@ const CallRoom = ({
       sampleRate: SAMPLE_RATE,
     });
     logTranslation("Emitido azure:start");
-  };
+  }, [logTranslation]);
 
-  const sendChunk = () => {
+  const sendChunk = useCallback(() => {
     if (!translationSocketRef.current) {
       logTranslation("[ERROR] socketRef.current es null en sendChunk");
       return;
@@ -479,89 +482,110 @@ const CallRoom = ({
     translationSocketRef.current.emit("azure:chunk", pcm16.buffer);
     translationSocketRef.current.emit("azure:stop");
     logTranslation("Emitido azure:stop tras azure:chunk");
-  };
+  }, [logTranslation]);
 
-  const startTranslation = async (mediaStream?: MediaStream) => {
-    console.log(mediaStream);
-    console.log("[CallRoom] startTranslation ejecutado", {
-      isTranslating,
-    });
-    if (isTranslating) {
-      logTranslation("[INFO] Ya está traduciendo, no se inicia de nuevo");
-      return;
-    }
-    logTranslation("Iniciando traducción y conectando socket...");
-    translationSocketRef.current = io(TRANSLATION_NS, {
-      transports: ["websocket"],
-    });
-    translationSocketRef.current.on("connect", () =>
-      logTranslation("Socket conectado")
-    );
-    translationSocketRef.current.on("azure:ready", () =>
-      logTranslation("Azure listo")
-    );
-    translationSocketRef.current.on("azure:error", (e: any) =>
-      logTranslation("Azure error: " + JSON.stringify(e))
-    );
-    translationSocketRef.current.on("translationResult", (data: any) => {
-      logTranslation(`Resultado: "${data.original}" -> "${data.translated}"`);
-      setOriginal(data.original);
-      setTranslated(data.translated);
-      if (data.audioBase64) playBase64Wav(data.audioBase64);
-    });
-    translationSocketRef.current.on("disconnect", () =>
-      logTranslation("Socket desconectado")
-    );
-
-    await startAzure();
-
-    logTranslation("Creando contexto de audio y capturando micrófono...");
-    audioCtxRef.current = new AudioContext({ sampleRate: SAMPLE_RATE });
-    let stream = mediaStream;
-    if (!stream) {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        logTranslation("Obtenido stream de micrófono por getUserMedia");
-      } catch (err) {
-        logTranslation("[ERROR] No se pudo obtener el micrófono: " + err);
+  const startTranslation = useCallback(
+    async (mediaStream?: MediaStream) => {
+      console.log(mediaStream);
+      console.log("[CallRoom] startTranslation ejecutado", {
+        isTranslating,
+      });
+      if (isTranslating) {
+        logTranslation("[INFO] Ya está traduciendo, no se inicia de nuevo");
         return;
       }
-    } else {
-      logTranslation("Usando mediaStream proporcionado");
-    }
-    localTranslationStreamRef.current = stream;
-    const source = audioCtxRef.current.createMediaStreamSource(stream);
-    srcRef.current = source;
-    const processor = audioCtxRef.current.createScriptProcessor(4096, 1, 1);
-    procRef.current = processor;
+      logTranslation("Iniciando traducción y conectando socket...");
+      translationSocketRef.current = io(TRANSLATION_NS, {
+        transports: ["websocket"],
+      });
+      translationSocketRef.current.on("connect", () =>
+        logTranslation("Socket conectado")
+      );
+      translationSocketRef.current.on("azure:ready", () =>
+        logTranslation("Azure listo")
+      );
+      translationSocketRef.current.on("azure:error", (e: any) =>
+        logTranslation("Azure error: " + JSON.stringify(e))
+      );
+      translationSocketRef.current.on("translationResult", (data: any) => {
+        logTranslation(`Resultado: "${data.original}" -> "${data.translated}"`);
+        // setOriginal(data.original); // removed unused
+        setTranslated(data.translated);
+        if (data.audioBase64) playBase64Wav(data.audioBase64);
+      });
+      translationSocketRef.current.on("disconnect", () =>
+        logTranslation("Socket desconectado")
+      );
 
-    processor.onaudioprocess = (e) => {
-      const pcm = e.inputBuffer.getChannelData(0);
-      const energy = rms(pcm);
-      chunkBufRef.current.push(new Float32Array(pcm));
-      logTranslation(`Procesado audio, energía: ${energy}`);
-      if (energy > THRESHOLD) {
-        speakingRef.current = true;
-        if (silenceTimerRef.current) {
-          window.clearTimeout(silenceTimerRef.current);
-          silenceTimerRef.current = null;
+      await startAzure();
+
+      logTranslation("Creando contexto de audio y capturando micrófono...");
+      audioCtxRef.current = new AudioContext({ sampleRate: SAMPLE_RATE });
+      let stream = mediaStream;
+      if (!stream) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          logTranslation("Obtenido stream de micrófono por getUserMedia");
+        } catch (err) {
+          logTranslation("[ERROR] No se pudo obtener el micrófono: " + err);
+          return;
         }
-      } else if (speakingRef.current && !silenceTimerRef.current) {
-        silenceTimerRef.current = window.setTimeout(() => {
-          speakingRef.current = false;
-          logTranslation("Detectado silencio, enviando chunk...");
-          sendChunk();
-        }, SILENCE_MS) as unknown as number;
+      } else {
+        logTranslation("Usando mediaStream proporcionado");
       }
-    };
+      localTranslationStreamRef.current = stream;
+      const source = audioCtxRef.current.createMediaStreamSource(stream);
+      srcRef.current = source;
+      const processor = audioCtxRef.current.createScriptProcessor(4096, 1, 1);
+      procRef.current = processor;
 
-    source.connect(processor);
-    processor.connect(audioCtxRef.current.destination);
-    setIsTranslating(true);
-    logTranslation("Captura iniciada y procesador conectado");
-  };
+      processor.onaudioprocess = (e) => {
+        const pcm = e.inputBuffer.getChannelData(0);
+        const energy = rms(pcm);
+        chunkBufRef.current.push(new Float32Array(pcm));
+        logTranslation(`Procesado audio, energía: ${energy}`);
+        if (energy > THRESHOLD) {
+          speakingRef.current = true;
+          if (silenceTimerRef.current) {
+            window.clearTimeout(silenceTimerRef.current);
+            silenceTimerRef.current = null;
+          }
+        } else if (speakingRef.current && !silenceTimerRef.current) {
+          silenceTimerRef.current = window.setTimeout(() => {
+            speakingRef.current = false;
+            logTranslation("Detectado silencio, enviando chunk...");
+            sendChunk();
+          }, SILENCE_MS) as unknown as number;
+        }
+      };
 
-  const stopTranslation = () => {
+      source.connect(processor);
+      processor.connect(audioCtxRef.current.destination);
+      setIsTranslating(true);
+      logTranslation("Captura iniciada y procesador conectado");
+    },
+    [
+      isTranslating,
+      logTranslation,
+      setTranslated,
+      startAzure,
+      playBase64Wav,
+      rms,
+      chunkBufRef,
+      THRESHOLD,
+      speakingRef,
+      silenceTimerRef,
+      SILENCE_MS,
+      sendChunk,
+      TRANSLATION_NS,
+      audioCtxRef,
+      srcRef,
+      procRef,
+      localTranslationStreamRef,
+    ]
+  );
+
+  const stopTranslation = useCallback(() => {
     if (!isTranslating) return;
     procRef.current?.disconnect();
     srcRef.current?.disconnect();
@@ -573,7 +597,15 @@ const CallRoom = ({
     translationSocketRef.current = null;
     setIsTranslating(false);
     logTranslation("Captura detenida");
-  };
+  }, [
+    isTranslating,
+    logTranslation,
+    procRef,
+    srcRef,
+    audioCtxRef,
+    translationSocketRef,
+    setIsTranslating,
+  ]);
 
   // Usa el hook de sala normalmente
   const {
@@ -597,15 +629,15 @@ const CallRoom = ({
   } = useCallRoom(meetingId, myId, { meetingName, myName });
 
   // === Muteo de audio solo para la llamada (no para traducción) ===
-  const muteCallAudio = () => {
+  const muteCallAudio = useCallback(() => {
     const stream = localStreamRef.current;
     if (!stream) return;
     stream.getAudioTracks().forEach((track: MediaStreamTrack) => {
       stream.removeTrack(track);
     });
-  };
+  }, [localStreamRef]);
 
-  const unmuteCallAudio = async () => {
+  const unmuteCallAudio = useCallback(async () => {
     const stream = localStreamRef.current;
     if (!stream) return;
     if (stream.getAudioTracks().length === 0) {
@@ -615,7 +647,7 @@ const CallRoom = ({
       const audioTrack = micStream.getAudioTracks()[0];
       stream.addTrack(audioTrack);
     }
-  };
+  }, [localStreamRef]);
 
   // Nueva función para el botón traducir
   const handleToggleTranslate = useCallback(async () => {
