@@ -1,3 +1,4 @@
+// ...existing code...
 // src/pages/CallRoom.tsx
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "../styles/callroom.css";
@@ -401,7 +402,7 @@ const CallRoom = ({
   const localTranslationStreamRef = useRef<MediaStream | null>(null);
 
   // === Constantes de traducción ===
-  const TRANSLATION_NS = "http://localhost:3001/traducir";
+  const TRANSLATION_NS = `${process.env.REACT_APP_API_URL}/traducir`;
   const SAMPLE_RATE = 16000;
   const SILENCE_MS = 1000;
   const THRESHOLD = 0.01;
@@ -481,6 +482,10 @@ const CallRoom = ({
   };
 
   const startTranslation = async (mediaStream?: MediaStream) => {
+    console.log(mediaStream);
+    console.log("[CallRoom] startTranslation ejecutado", {
+      isTranslating,
+    });
     if (isTranslating) {
       logTranslation("[INFO] Ya está traduciendo, no se inicia de nuevo");
       return;
@@ -591,33 +596,51 @@ const CallRoom = ({
     getUserDisplayName,
   } = useCallRoom(meetingId, myId, { meetingName, myName });
 
+  // === Muteo de audio solo para la llamada (no para traducción) ===
+  const muteCallAudio = () => {
+    const stream = localStreamRef.current;
+    if (!stream) return;
+    stream.getAudioTracks().forEach((track: MediaStreamTrack) => {
+      stream.removeTrack(track);
+    });
+  };
+
+  const unmuteCallAudio = async () => {
+    const stream = localStreamRef.current;
+    if (!stream) return;
+    if (stream.getAudioTracks().length === 0) {
+      const micStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      const audioTrack = micStream.getAudioTracks()[0];
+      stream.addTrack(audioTrack);
+    }
+  };
+
   // Nueva función para el botón traducir
   const handleToggleTranslate = useCallback(async () => {
     console.log("[CallRoom] handleToggleTranslate ejecutado", {
       isTranslating,
     });
     if (!isTranslating) {
-      const tracks = localStreamRef.current?.getAudioTracks() || [];
-      console.log(
-        "[CallRoom] Tracks antes de traducir:",
-        tracks,
-        tracks.map((t) => t.enabled)
-      );
-      localStreamRef.current
-        ?.getAudioTracks()
-        .forEach((t) => (t.enabled = false));
-      console.log("[CallRoom] Tracks después de desactivar:", tracks);
-      await startTranslation(localStreamRef.current || undefined);
+      // Mutea la llamada (quita el audio de localStreamRef), pero deja el audio para traducción
+      muteCallAudio();
+      await startTranslation(); // SIEMPRE pide un nuevo stream de micrófono
       console.log("[CallRoom] startTranslation llamado");
     } else {
       console.log("[CallRoom] Deteniendo traducción");
       stopTranslation();
-      localStreamRef.current
-        ?.getAudioTracks()
-        .forEach((t) => (t.enabled = true));
+      // Vuelve a agregar el audio a la llamada
+      await unmuteCallAudio();
       console.log("[CallRoom] stopTranslation llamado");
     }
-  }, [isTranslating, localStreamRef]);
+  }, [
+    isTranslating,
+    muteCallAudio,
+    startTranslation,
+    stopTranslation,
+    unmuteCallAudio,
+  ]);
 
   return (
     <div className="callroom">
