@@ -18,10 +18,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { motion } from "framer-motion";
 import { io } from "socket.io-client";
+
 import Login from "./components/login/Login";
 import Register from "./components/login/Register";
 import Dashboard from "./Dashboard/Dashboard";
-import VideoCall from "./components/VideoCall/VideoCall";
+// import VideoCall from "./components/VideoCall/VideoCall";  // ← ya no
+import CallRoom from "./pages/CallRoom"; // ajusta la ruta según dónde pusiste CallRoom.tsx
 import Sidebar from "./components/Sidebar/Sidebar";
 import Loader from "./components/Loader/Loader";
 import UserProfilePanel from "./components/UserProfilePanel/UserProfilePanel";
@@ -248,15 +250,12 @@ export default function App() {
             color: "#f5f5f7",
           }}
         >
+          {/* Vista dashboard */}
           {!meeting && currentSection === "dashboard" && (
-            <Dashboard
-              user={user}
-              token={token}
-              onJoinMeeting={setMeeting}
-              refreshKey={refreshKey}
-            />
+            <Dashboard user={user} token={token} onJoinMeeting={setMeeting} />
           )}
 
+          {/* Otras secciones placeholder */}
           {!meeting && ["friends", "meetings"].includes(currentSection) && (
             <Typography
               variant="h5"
@@ -268,6 +267,7 @@ export default function App() {
             </Typography>
           )}
 
+          {/* Vista llamada */}
           {meeting && (
             <Box>
               <Button
@@ -277,11 +277,8 @@ export default function App() {
               >
                 ← Back to Dashboard
               </Button>
-              <VideoCall
-                userId={user.id}
-                meetingId={meeting.id}
-                onLeave={() => setMeeting(null)}
-              />
+
+              <CallRoom meetingId={meeting?.id} myId={user?.id} />
             </Box>
           )}
         </Box>

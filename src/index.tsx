@@ -2,22 +2,38 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { SnackbarProvider } from "notistack";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <React.StrictMode>
-    <SnackbarProvider
-      maxSnack={3}
-      anchorOrigin={{ vertical: "top", horizontal: "center" }}
-    >
+    <>
       <App />
-    </SnackbarProvider>
+      <ToastContainer
+        position="top-center"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        toastStyle={{
+          borderRadius: "1rem",
+          background: "linear-gradient(145deg, #10172a, #0e1423)",
+          color: "#f1f5f9",
+          fontWeight: 600,
+          fontFamily: "Inter, sans-serif",
+          fontSize: 16,
+          boxShadow: "0 8px 32px rgba(59,130,246,0.15)",
+        }}
+      />
+    </>
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// Si tienes reportWebVitals.ts, descomenta la siguiente línea:
+// reportWebVitals();

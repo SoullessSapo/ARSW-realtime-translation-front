@@ -1,0 +1,158 @@
+:root {
+  --bg: #1b1b29;
+  --bg-panel: #232335;
+  --bg-tile: #2c2c42;
+  --accent: #5b4bff;
+  --accent-hover: #6c5cff;
+  --danger: #ef4444;
+  --text: #f5f6fa;
+  --text-dim: #a3a6b7;
+  --radius: 14px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --gap: 14px;
+  --tile-border: 2px solid transparent;
+  --tile-border-active: 2px solid var(--accent);
+}
+
+/* Contenedor principal */
+.callContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* Header */
+.header {
+  padding: 12px 20px;
+  border-bottom: 1px solid #2e2e43;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-panel);
+  box-shadow: var(--shadow);
+  z-index: 10;
+}
+.header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Grid de videos */
+.videoGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--gap);
+  padding: var(--gap);
+  overflow: auto;
+}
+
+/* Tiles */
+.tile {
+  position: relative;
+  background: var(--bg-tile);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #373758;
+  border: var(--tile-border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tile.active {
+  border: var(--tile-border-active);
+}
+.tile video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #111;
+}
+.label {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: #0006;
+  backdrop-filter: blur(6px);
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* Barra de controles estilo Teams */
+.controls {
+  padding: 12px 20px;
+  border-top: 1px solid #2e2e43;
+  background: var(--bg-panel);
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  box-shadow: var(--shadow);
+  z-index: 10;
+}
+.btn {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background: var(--bg-tile);
+  color: var(--text);
+  padding: 12px 16px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: background 0.15s, transform 0.15s;
+}
+.btn:hover {
+  background: #3a3a56;
+  transform: scale(1.06);
+}
+.btn.toggleOff {
+  background: #3a3a56;
+}
+.btn.danger {
+  background: var(--danger);
+}
+.btn.danger:hover {
+  background: #dc2626;
+}
+
+/* Tooltip simple */
+.btn[data-tip] {
+  position: relative;
+}
+.btn[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000c;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Indicador de hablando (borde glow) */
+@keyframes speakGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(91, 75, 255, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(91, 75, 255, 0);
+  }
+}
+.speaking {
+  animation: speakGlow 1.2s infinite;
+  border: 2px solid var(--accent) !important;
+}

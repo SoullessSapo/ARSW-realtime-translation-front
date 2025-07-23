@@ -1,26 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
+    "target": "es6",
     "module": "esnext",
+    "jsx": "react-jsx",
+    "strict": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
-  },
-  "include": [
-    "src"
-  ]
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es2020", "dom", "webworker"],
+    "types": ["./src/types/audio-worklet.d.ts"]
+  }
 }

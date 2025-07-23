@@ -34,7 +34,7 @@ export default function Login({ onLogin, onShowRegister }: LoginProps) {
       });
       if (!res.ok) throw new Error("Login failed");
       const data = await res.json();
-      localStorage.setItem("token", data.access_token);
+      sessionStorage.setItem("token", data.access_token);
       onLogin(data.user, data.access_token);
     } catch {
       setError("Invalid credentials");
