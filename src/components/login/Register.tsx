@@ -42,6 +42,7 @@ export default function Register({
     }
 
     try {
+      console.log(process.env.REACT_APP_API_URL);
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/users/register`,
         {
